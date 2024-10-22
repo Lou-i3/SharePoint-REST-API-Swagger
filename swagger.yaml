@@ -1,8 +1,18 @@
 openapi: 3.0.0
 info:
-  title: SharePoint Lists API
+  title: SharePoint REST API
   version: 1.0.0
 
+servers:
+  - url: https://{tenantName}.sharepoint.com/sites/{siteName}
+    variables:
+      tenantName:
+        default: contoso
+        description: The name of your SharePoint tenant
+      siteName:
+        default: mysite
+        description: The name of your SharePoint site
+        
 components:
   securitySchemes:
     bearerAuth:
