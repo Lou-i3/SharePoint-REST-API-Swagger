@@ -1,0 +1,165 @@
+openapi: 3.0.0
+info:
+  title: SharePoint Lists API
+  version: 1.0.0
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    rtFaCookie:
+      type: apiKey
+      in: cookie
+      name: rtFa
+    fedAuthCookie:
+      type: apiKey
+      in: cookie
+      name: FedAuth
+
+  schemas:
+    ListObject:
+      type: object
+      properties:
+        Id: 
+          type: string
+          format: uuid
+        Title:
+          type: string
+        # Add other properties as needed
+
+    ListItemsResponse:
+      type: object
+      properties:
+        value:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListObject'
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: List not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  callbacks:
+    commonResponses:
+      '{$request.path}':
+        get:
+          responses:
+            '400':
+              $ref: '#/components/responses/BadRequest'
+            '401':
+              $ref: '#/components/responses/Unauthorized'
+            '404':
+              $ref: '#/components/responses/NotFound'
+
+paths:
+  /_api/lists/getbytitle('{listTitle}'):
+    get:
+      summary: Get list by title
+      parameters:
+        - name: listTitle
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListObject'
+      callbacks:
+        $ref: '#/components/callbacks/commonResponses'
+
+  /_api/lists/getbytitle('{listTitle}')/items:
+    get:
+      summary: Get items from list by title
+      parameters:
+        - name: listTitle
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListItemsResponse'
+      callbacks:
+        $ref: '#/components/callbacks/commonResponses'
+
+  /_api/lists/getbyid(guid'{listGUID}'):
+    get:
+      summary: Get list by GUID
+      parameters:
+        - name: listGUID
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListObject'
+      callbacks:
+        $ref: '#/components/callbacks/commonResponses'
+
+  /_api/lists/getbyid(guid'{listGUID}')/items:
+    get:
+      summary: Get items from list by GUID
+      parameters:
+        - name: listGUID
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListItemsResponse'
+      callbacks:
+        $ref: '#/components/callbacks/commonResponses'
+
+security:
+  - bearerAuth: []
+  - rtFaCookie: []
+  - fedAuthCookie: []
