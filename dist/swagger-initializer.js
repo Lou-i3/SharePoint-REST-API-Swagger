@@ -13,7 +13,8 @@ window.onload = function() {
       SwaggerUIStandalonePreset
     ],
     plugins: [
-      SwaggerUIBundle.plugins.DownloadUrl
+      SwaggerUIBundle.plugins.DownloadUrl,
+      DontSetParametersDefaultsPlugin
     ],
     layout: "StandaloneLayout",
     persistAuthorization: true,
@@ -47,3 +48,12 @@ window.onload = function() {
 
   //</editor-fold>
 };
+
+
+const DontSetParametersDefaultsPlugin = () => ({
+  wrapComponents: {
+    JsonSchemaForm: (Original, { React }) => ({ value, description, ...props }) => {
+      return React.createElement(Original, { ...props, description: value, dispatchInitialValue: true })
+    }
+  },
+});
