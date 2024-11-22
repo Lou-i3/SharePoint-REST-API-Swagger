@@ -358,6 +358,7 @@ components:
 
     top: 
       name: $top
+      description: "The `$top` option enables you to select the first **n** items of the return set for return. For example, the following URI requests that only the first 10 items in the prospective return set actually be returned: `$top=10`"
       in: query
       required: false
       schema:
@@ -367,6 +368,7 @@ components:
 
     skip:
       name: $skip
+      description: The `$skiptoken` query option enables you to skip over items until the specified item is reached and return the rest.
       in: query
       required: false
       schema:
@@ -376,6 +378,7 @@ components:
 
     filter:
       name: $filter
+      description: Use the `$filter` query option to select which items to return. [OData query operators supported in the SharePoint REST service](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/use-odata-query-operations-in-sharepoint-rest-requests#odata-query-operators-supported-in-the-sharepoint-rest-service) lists the filter query comparison options and functions you can use with the SharePoint REST service.
       in: query
       required: false
       schema:
@@ -386,6 +389,7 @@ components:
 
     expand: 
       name: $expand
+      description: "Use the `$expand` query option to expand fields. The syntax for `$expand` operator is as follows: `$expand= Field/Id`"
       in: query
       required: false
       schema:
@@ -397,6 +401,7 @@ components:
 # Path params
     listTitle:
       name: listTitle
+      description: "Display name of list."
       in: path
       required: true
       schema:
@@ -405,6 +410,7 @@ components:
 
     listGUID:
       name: listGUID
+      description: "GUID of list."
       in: path
       required: true
       schema:
@@ -413,6 +419,7 @@ components:
 
     itemId:
       name: itemId
+      description: "Id of the item."
       in: path
       required: true
       schema:
