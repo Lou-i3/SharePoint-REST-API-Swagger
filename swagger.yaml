@@ -288,6 +288,39 @@ components:
             type: object
             #TODO
 
+    NavigationNode:
+      type: object
+      properties:
+        __metadata:
+          type: object
+          properties:
+            type:
+              type: string
+              default: SP.NavigationNode
+        Title:
+          type: string
+        Url: 
+          type: string
+          description: Url for the menu node. If label only, put 'http://linkless.header/' in Url.
+        IsExternal:
+          type: boolean
+      required:
+        - __metadata
+        - Title
+        - Url
+        - IsExternal
+
+
+    NavigationNodeResponseJson:
+      type: object
+      properties:
+        d:
+          type: object
+          properties:
+            NavigationNode:
+              $ref: '#/components/schemas/NavigationNode'
+
+
     MenuStateResponseJson:
       type: object
       properties:
@@ -426,6 +459,16 @@ components:
         type: string
         format: number
 
+    Content-Type:
+      name: Content-Type
+      description: needed when sending json body.
+      required: true
+      in: header
+      schema: 
+        type: string
+        default: application/json
+
+
 ###############################################################################################
 # Components - Responses
 ###############################################################################################
@@ -515,6 +558,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/MenuStateResponseJson'
+
+    NavigationNode:
+      description: Navigation node object
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NavigationNodeResponseJson'
 
 ###############################################################################################
 # Components - Callbacks
@@ -679,6 +729,31 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/MenuState'
+        '400': 
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/UnauthorizedOperation'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  
+  /_api/Web/Navigation/QuickLaunch:
+    post:
+      summary: Add to navigation menu
+      tags:
+        - navigation
+      parameters:
+        - $ref: '#/components/parameters/select'
+        - $ref: '#/components/parameters/Content-Type'
+      requestBody:
+        description: Details for the menu item to add.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NavigationNode'
+      responses:
+        '200':
+          $ref: '#/components/responses/NavigationNode'
         '400': 
           $ref: '#/components/responses/BadRequest'
         '403':
