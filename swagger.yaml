@@ -336,6 +336,7 @@ components:
 # Query params
     select:
       name: $select
+      description: Use the `$select` query option to specify which fields to return for a given list, list item, or other SharePoint object represented by an entity set. You can use `$select=*` to return all available fields.
       in: query
       required: false
       schema:
@@ -346,6 +347,7 @@ components:
 
     orderby:
       name: $orderby
+      description: Use the `$orderby` query option to specify how to sort the items in your query return set. To sort by multiple fields, specify a comma-separated list of fields. You can also specify whether to sort the items in ascending or descending order by appending the asc or desc keyword to your query.
       in: query
       required: false
       schema:
