@@ -253,7 +253,12 @@ components:
         CustomProperties:
           type: array
           items: 
-            #TODO
+            type: object
+            properties:
+              name:
+                type: string
+              key:
+                type: string
         FriendlyUrlSegment:
           type: string
         IsDeleted:
@@ -280,6 +285,7 @@ components:
         Translations:
           type: array
           items:
+            type: object
             #TODO
 
     MenuStateResponseJson:
@@ -504,7 +510,7 @@ components:
 ###############################################################################################
 # Components - Callbacks
 ###############################################################################################
-  callbacks:
+  # callbacks:
 
 
 ###############################################################################################
