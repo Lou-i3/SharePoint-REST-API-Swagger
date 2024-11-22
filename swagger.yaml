@@ -1,24 +1,37 @@
 openapi: 3.0.0
 info:
   title: SharePoint REST API
+  description: SharePoint REST API endpoints documentation. 
   version: 1.0.0
 
 servers:
   - url: https://{tenantName}.sharepoint.com/sites/{siteName}
+    description: 'SharePoint site in the tenant.'
     variables:
       tenantName:
         default: contoso
         description: The name of your SharePoint tenant
       siteName:
-        default: mysite
+        default: mySite
         description: The name of your SharePoint site
-        
+  - url: https://{tenantName}.sharepoint.com
+    description: 'SharePoint root site of the tenant.'
+    variables:
+      tenantName:
+        default: contoso
+        description: The name of your SharePoint tenant
+
+security:
+  - bearerAuth: []
+  - rtFaCookie: []
+  - fedAuthCookie: []
+
 components:
+
+###############################################################################################
+# Components - Security
+###############################################################################################
   securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
     rtFaCookie:
       type: apiKey
       in: cookie
@@ -27,7 +40,14 @@ components:
       type: apiKey
       in: cookie
       name: FedAuth
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 
+###############################################################################################
+# Components - Schema definitions
+###############################################################################################
   schemas:
     ListObject:
       type: object
@@ -37,7 +57,59 @@ components:
           format: uuid
         Title:
           type: string
-        # Add other properties as needed
+          example: 
+            - 'MyList'
+        ItemCount:
+          type: number
+          default: 842
+        Created:
+          type: string
+          format: date-time
+
+        # ... Other list properties
+
+    ListObjectResponseJson:
+      type: object
+      properties:
+        d:
+          $ref: '#/components/schemas/ListObject'
+      
+    ListObjectResponseXml:
+      type: object
+      xml: 
+        name: 'entry'
+      properties:
+        updated: 
+          type: string
+          format: date-time
+        content:
+          type: object
+          properties:
+            properties:
+              $ref: '#/components/schemas/ListObject'
+
+    ListsArrayResponseJson:
+      type: object
+      properties: 
+        d:
+          type: object
+          properties: 
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/ListObject'
+
+    ListsArrayResponseXml:
+      type: object
+      xml:
+          name: 'feed'
+      properties: 
+        updated: 
+          type: string
+          format: date-time
+        content:
+          $ref: '#/components/schemas/ListObjectResponseXml'
+
 
     ListItemsResponse:
       type: object
@@ -47,129 +119,554 @@ components:
           items:
             $ref: '#/components/schemas/ListObject'
 
-    ErrorResponse:
+    ListItemObject:
       type: object
+      additionalProperties: true
       properties:
-        error:
+        title:
+          type: string
+        Id:
+          type: number
+        Created:
+          type: string
+          format: date-time
+        Modified:
+          type: string
+          format: date-time
+        AuthorId:
+          type: number
+          description: Id of the author without requiring to $expand Author field properties
+        EditorId:
+          type: number
+
+        # Properties requiring $select & $expand
+        Author:
+          $ref: '#/components/schemas/UserInfoItemObject'
+        Editor:
+          $ref: '#/components/schemas/UserInfoItemObject'
+        # ... Other list item properties 
+        # + custom list properties
+
+    ListItemObjectResponseJson:
+        type: object
+        properties:
+          d:
+            $ref: '#/components/schemas/ListItemObject'
+
+    ListItemObjectResponseXml:
+      type: object
+      xml: 
+        name: 'entry'
+      properties:
+        updated: 
+          type: string
+          format: date-time
+        content:
           type: object
           properties:
-            code:
+            properties:
+              $ref: '#/components/schemas/ListItemObject'
+
+    ListItemsArrayResponseJson:
+      type: object
+      properties: 
+        d:
+          type: object
+          properties: 
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/ListItemObject'
+
+    ListItemsArrayResponseXml:
+      type: object
+      xml: 
+        name: 'feed'
+      properties: 
+        updated: 
+          type: string
+          format: date-time
+        content:
+                $ref: '#/components/schemas/ListItemObjectResponseXml'
+
+    UserInfoItemObject:
+      type: object
+      properties:
+        EMail:
+          type: string
+          format: email
+        
+        # TODO
+
+    MenuState:
+      type: object
+      properties:
+        AudienceIds:
+          type: object
+          properties:
+            results:
+              type:  array
+              items:
+                type: string
+                format: uuid
+                default: 00000000-0000-0000-0000-000000000000
+        FriendlyUrlPrefix:
+          type: string
+        IsAudienceTargetEnabledForGlobalNav:
+          type: boolean
+        Nodes:
+          type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/MenuNode'
+        SimpleUrl:
+          type: string
+        SPSitePrefix:
+          type: string
+        SPWebPrefix:
+          type: string
+        StartingNodeKey:
+          type: string
+        StartingNodeTitle:
+          type: string
+        Version:
+          type: string
+          format: date
+
+    MenuNode:
+      type: object
+      properties:
+        AudienceIds:
+          type: object
+          properties:
+            results:
+              type:  array
+              items:
+                type: string
+                format: uuid
+                default: []
+        CurrentLCID:
+          type: number
+          pattern: '^\d{4}$' # 4 numbers
+        CustomProperties:
+          type: array
+          items: 
+            #TODO
+        FriendlyUrlSegment:
+          type: string
+        IsDeleted:
+          type: boolean
+        IsHidden:
+          type: boolean
+        IsTitleForExistingLanguage:
+          type: boolean
+        Key: 
+          type: string
+          pattern: '^\d{4}$' # 4 numbers
+        Nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/MenuNode'
+        NodeType:
+          type: number
+        OpenInNewWindow:
+          type: boolean
+        SimpleUrl:
+          type: string
+        Title:
+          type: string
+        Translations:
+          type: array
+          items:
+            #TODO
+
+    MenuStateResponseJson:
+      type: object
+      properties:
+        d:
+          type: object
+          properties:
+            MenuState:
+              $ref: '#/components/schemas/MenuState'
+
+    ErrorResponseJson:
+      type: object
+      xml: 
+        name: error
+      properties:
+        code:
+          type: string
+        message:
+          type: object
+          properties: 
+            lang:
               type: string
-            message:
+              default: 'fr-FR'
+            value:
               type: string
 
+    ErrorResponseXml:
+      type: object
+      xml: 
+        name: error
+      properties:
+        code:
+          type: string
+        message:
+          type: object
+          properties: 
+            lang:
+              type: string
+              default: 'fr-FR'
+              xml:
+                attribute: true
+
+###############################################################################################
+# Components - Parameters
+###############################################################################################
+  parameters:
+# Query params
+    select:
+      name: $select
+      in: query
+      required: false
+      schema:
+        type: string
+        example:
+          - "Id,Title"
+          - "Author"
+
+    orderby:
+      name: $orderby
+      in: query
+      required: false
+      schema:
+        type: number
+        example:
+          - "Id"
+          - "Title"
+
+    top: 
+      name: $top
+      in: query
+      required: false
+      schema:
+        type: number
+        example:
+          - 100
+
+    skip:
+      name: $skip
+      in: query
+      required: false
+      schema:
+        type: number
+        example:
+          - 100
+
+    filter:
+      name: $filter
+      in: query
+      required: false
+      schema:
+        type: string
+        example:
+          - "Id eq 1"
+          - "startswith(Title, 'XX')"
+
+    expand: 
+      name: $expand
+      in: query
+      required: false
+      schema:
+        type: string
+        example:
+          - "Id,Title"
+          - "Author"
+
+# Path params
+    listTitle:
+      name: listTitle
+      in: path
+      required: true
+      schema:
+        type: string
+        default: 'MyList'
+
+    listGUID:
+      name: listGUID
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    itemId:
+      name: itemId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: number
+
+###############################################################################################
+# Components - Responses
+###############################################################################################
   responses:
     BadRequest:
       description: Bad request
       content:
+        application/atom+xml:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseXml'
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/ErrorResponseJson'
     Unauthorized:
       description: Unauthorized
       content:
+        application/atom+xml:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseXml'
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/ErrorResponseJson'
+
+    UnauthorizedOperation:
+      description: Unauthorized operation
+      content:
+        application/atom+xml:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseXml'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseJson'
+
     NotFound:
-      description: List not found
+      description: Not found
+      content:
+        application/atom+xml:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseXml'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseJson'
+
+    ListObject:
+      description: List object response
+      content: 
+        application/atom+xml:
+          schema:
+            $ref: '#/components/schemas/ListObjectResponseXml'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ListObjectResponseJson'
+
+    ListsArray:
+      description: List array response
+      content:
+        application/atom+xml:
+          schema:
+            $ref: '#/components/schemas/ListsArrayResponseXml'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ListsArrayResponseJson'
+
+    ListItemObject:
+      description: List item object response
+      content:
+        application/atom+xml:
+          schema:
+            $ref: '#/components/schemas/ListItemObjectResponseXml'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ListItemObjectResponseJson'
+
+    ListItemsArray: 
+      description: Array of list items response
+      content:
+        application/atom+xml:
+          schema:
+            $ref: '#/components/schemas/ListItemsArrayResponseXml'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ListItemsArrayResponseJson'
+
+    MenuState:
+      description: Navigation menu objects
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/MenuStateResponseJson'
 
+###############################################################################################
+# Components - Callbacks
+###############################################################################################
   callbacks:
-    commonResponses:
-      '{$request.path}':
-        get:
-          responses:
-            '400':
-              $ref: '#/components/responses/BadRequest'
-            '401':
-              $ref: '#/components/responses/Unauthorized'
-            '404':
-              $ref: '#/components/responses/NotFound'
 
+
+###############################################################################################
+# Tags
+###############################################################################################
+tags:
+  - name: lists
+    description: |
+      Query lists.
+  - name: list items
+    description: |
+      Query list items.  
+      Any list query can be used.  
+      **Note**: `Author` & `Editor` fields require `$select` & `$expand` to view full details.
+  - name: pages
+    description: |
+      Working with pages
+  - name: terms
+    description: | 
+      Working with terms of termstore and managed metadata
+  - name: navigation
+    description: |
+      Working with site navigation menu. 
+
+###############################################################################################
+# Paths
+###############################################################################################
 paths:
-  /_api/lists/getbytitle('{listTitle}'):
+  /_api/lists:
+    get:
+      summary: Get all the lists from site
+      tags:
+        - lists
+      parameters: 
+        - $ref: '#/components/parameters/select'
+        - $ref: '#/components/parameters/orderby'
+        - $ref: '#/components/parameters/top'
+        - $ref: '#/components/parameters/skip'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/expand'
+
+      responses:
+        '200':
+          $ref: '#/components/responses/ListsArray'
+        '400': 
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/UnauthorizedOperation'
+        '404':
+          $ref: '#/components/responses/NotFound'
+          
+  /_api/lists/getByTitle('{listTitle}'):
     get:
       summary: Get list by title
+      tags:
+        - lists
       parameters:
-        - name: listTitle
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/listTitle'
+        - $ref: '#/components/parameters/select'
+        - $ref: '#/components/parameters/orderby'
+        - $ref: '#/components/parameters/top'
+        - $ref: '#/components/parameters/skip'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/expand'
       responses:
         '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListObject'
-      callbacks:
-        $ref: '#/components/callbacks/commonResponses'
+          $ref: '#/components/responses/ListObject'
+        '400': 
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/UnauthorizedOperation'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
-  /_api/lists/getbytitle('{listTitle}')/items:
-    get:
-      summary: Get items from list by title
-      parameters:
-        - name: listTitle
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListItemsResponse'
-      callbacks:
-        $ref: '#/components/callbacks/commonResponses'
-
-  /_api/lists/getbyid(guid'{listGUID}'):
+  /_api/lists/getById(guid'{listGUID}'):
     get:
       summary: Get list by GUID
+      tags: 
+        - lists
       parameters:
-        - name: listGUID
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+        - $ref: '#/components/parameters/listGUID'
+        - $ref: '#/components/parameters/select'
+        - $ref: '#/components/parameters/orderby'
+        - $ref: '#/components/parameters/top'
+        - $ref: '#/components/parameters/skip'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/expand'
       responses:
         '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListObject'
-      callbacks:
-        $ref: '#/components/callbacks/commonResponses'
+          $ref: '#/components/responses/ListObject'
+        '400': 
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/UnauthorizedOperation'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
-  /_api/lists/getbyid(guid'{listGUID}')/items:
+  /_api/lists/getByTitle('{listTitle}')/items:
     get:
-      summary: Get items from list by GUID
+      summary: Get items from list by title
+      tags: 
+        - list items
       parameters:
-        - name: listGUID
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+        - $ref: '#/components/parameters/listTitle'
+        - $ref: '#/components/parameters/select'
+        - $ref: '#/components/parameters/orderby'
+        - $ref: '#/components/parameters/top'
+        - $ref: '#/components/parameters/skip'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/expand'
       responses:
         '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListItemsResponse'
-      callbacks:
-        $ref: '#/components/callbacks/commonResponses'
+          $ref: '#/components/responses/ListItemsArray'
+        '400': 
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/UnauthorizedOperation'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
-security:
-  - bearerAuth: []
-  - rtFaCookie: []
-  - fedAuthCookie: []
+  /_api/lists/getByTitle('{listTitle}')/items({itemId}):
+    get:
+      summary: Get items from list by title
+      tags: 
+        - list items
+      parameters:
+        - $ref: '#/components/parameters/listTitle'
+        - $ref: '#/components/parameters/itemId'
+        - $ref: '#/components/parameters/select'
+        - $ref: '#/components/parameters/orderby'
+        - $ref: '#/components/parameters/top'
+        - $ref: '#/components/parameters/skip'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/expand'
+      responses:
+        '200':
+          $ref: '#/components/responses/ListItemObject'
+        '400': 
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/UnauthorizedOperation'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /_api/Navigation/MenuState:
+    post:
+      summary: Get menu items
+      tags: 
+        - navigation
+      parameters:
+        - $ref: '#/components/parameters/select'
+        - $ref: '#/components/parameters/orderby'
+        - $ref: '#/components/parameters/top'
+        - $ref: '#/components/parameters/skip'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/expand'
+      responses:
+        '200':
+          $ref: '#/components/responses/MenuState'
+        '400': 
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/UnauthorizedOperation'
+        '404':
+          $ref: '#/components/responses/NotFound'
