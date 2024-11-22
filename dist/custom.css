@@ -1,3 +1,10 @@
 .topbar {
     display: none
 }
+
+/* Code blocks background & color */
+.swagger-ui .markdown code, 
+.swagger-ui .renderedMarkdown code {
+    background: rgb(0 0 0 / 40%);
+    color: #b078e1;
+}
