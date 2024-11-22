@@ -243,10 +243,10 @@ components:
           properties:
             results:
               type:  array
+              default: []
               items:
                 type: string
                 format: uuid
-                default: []
         CurrentLCID:
           type: number
           pattern: '^\d{4}$' # 4 numbers
