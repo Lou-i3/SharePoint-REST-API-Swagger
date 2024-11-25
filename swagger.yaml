@@ -465,6 +465,24 @@ components:
         type: string
         format: number
 
+    termGUID:
+      name: termGUID
+      description: "GUID of the term."
+      in: path
+      required: true
+      schema:
+        type: string
+        format: guid
+
+    termSetGUID:
+      name: termSetGUID
+      description: "GUID of the term set."
+      in: path
+      required: true
+      schema:
+        type: string
+        format: guid
+
     Content-Type:
       name: Content-Type
       description: needed when sending json body.
@@ -517,6 +535,9 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponseJson'
+
+    NoContent:
+      description: No Content. 
 
     ListObject:
       description: List object response
@@ -760,6 +781,24 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/NavigationNode'
+        '400': 
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/UnauthorizedOperation'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /_api/v2.1/termStore/sets/{termSetGUID}/terms/{termGUID}:
+    delete:
+      summary: Delete term
+      tags:
+        - terms
+      parameters:
+        - $ref: '#/components/parameters/termSetGUID'
+        - $ref: '#/components/parameters/termGUID'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
         '400': 
           $ref: '#/components/responses/BadRequest'
         '403':
