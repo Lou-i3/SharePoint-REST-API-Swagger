@@ -177,6 +177,9 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/ListItemObject'
+            __next:
+              type: string
+              format: url
 
     ListItemsArrayResponseXml:
       type: object
@@ -187,7 +190,10 @@ components:
           type: string
           format: date-time
         content:
-                $ref: '#/components/schemas/ListItemObjectResponseXml'
+          $ref: '#/components/schemas/ListItemObjectResponseXml'
+        link:
+          type: string
+          format: url
 
     UserInfoItemObject:
       type: object
