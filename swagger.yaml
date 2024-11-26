@@ -539,6 +539,47 @@ components:
     NoContent:
       description: No Content. 
 
+    LastItemModifiedDate:
+      description: Returns the LastItemModifiedDate for site.
+      content:
+        application/atom+xml:
+          schema:
+            type: string
+            xml:
+              name: d:LastItemModifiedDate
+            format: date-time
+        application/json:
+          schema:
+            type: object
+            properties:
+              d: 
+                type: object
+                properties:
+                  LastItemModifiedDate:
+                    type: string
+                    format: date-time
+
+    LastItemUserModifiedDate:
+      description: Returns the LastItemUserModifiedDate for site.
+      content:
+        application/atom+xml:
+          schema:
+            type: string
+            xml:
+              name: d:LastItemUserModifiedDate
+            format: date-time
+        application/json:
+          schema:
+            type: object
+            properties:
+              d: 
+                type: object
+                properties:
+                  LastItemUserModifiedDate:
+                    type: string
+                    format: date-time
+
+
     ListObject:
       description: List object response
       content: 
@@ -603,6 +644,9 @@ components:
 # Tags
 ###############################################################################################
 tags:
+  - name: site
+    description: |
+      Query site information.
   - name: lists
     description: |
       Query lists.
@@ -625,6 +669,26 @@ tags:
 # Paths
 ###############################################################################################
 paths:
+  /_api/web/LastItemModifiedDate:
+    get:
+      summary: Get the last activity date for site.
+      description: Site's last activity date will be updated, when a file is updated or added, list item is updated or added, when a user visits the site. 
+      tags:
+        - site
+      responses:
+        '200':
+          $ref: '#/components/responses/LastItemModifiedDate'
+
+  /_api/web/LastItemUserModifiedDate:
+    get:
+      summary: Gives the last date when a list / library was updated.
+      tags:
+        - site
+      responses:
+        '200':
+          $ref: '#/components/responses/LastItemUserModifiedDate'
+
+
   /_api/lists:
     get:
       summary: Get all the lists from site
