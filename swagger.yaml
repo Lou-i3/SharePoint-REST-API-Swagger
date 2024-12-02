@@ -303,18 +303,32 @@ components:
             type:
               type: string
               default: SP.NavigationNode
+        AudienceIds:
+          type: string
+        CurrentLCID: 
+          type: string
+        IsExternal:
+          type: boolean
+        IsDocLib:
+          type: boolean
+        IsVisible:
+          type: boolean
         Title:
           type: string
         Url: 
           type: string
           description: Url for the menu node. If label only, put 'http://linkless.header/' in Url.
-        IsExternal:
-          type: boolean
       required:
         - __metadata
         - Title
         - Url
         - IsExternal
+      example:
+        __metadata: 
+            type: SP.NavigationNode
+        Title: My node
+        Url: /myPage.aspx
+        IsExternal: false
 
 
     NavigationNodeResponseJson:
@@ -483,6 +497,16 @@ components:
         type: string
         format: guid
 
+    nodeId:
+      name: nodeId
+      description: "Id of the node."
+      in: path
+      required: true
+      schema:
+        type: string
+        format: number
+
+# Other Params
     Content-Type:
       name: Content-Type
       description: needed when sending json body.
@@ -660,7 +684,7 @@ tags:
       Working with pages
   - name: terms
     description: | 
-      Working with terms of termstore and managed metadata
+      Working with terms of term store and managed metadata
   - name: navigation
     description: |
       Working with site navigation menu. 
@@ -828,6 +852,7 @@ paths:
           $ref: '#/components/responses/NotFound'
   
   /_api/Web/Navigation/QuickLaunch:
+    # Cannot GET this url 
     post:
       summary: Add to navigation menu
       tags:
@@ -835,6 +860,33 @@ paths:
       parameters:
         - $ref: '#/components/parameters/select'
         - $ref: '#/components/parameters/Content-Type'
+      requestBody:
+        description: Details for the menu item to add.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NavigationNode'
+      responses:
+        '200':
+          $ref: '#/components/responses/NavigationNode'
+        '400': 
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/UnauthorizedOperation'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /_api/Web/Navigation/GetNodeById({nodeId})/Children:
+    # Cannot GET this url 
+    post:
+      summary: Add node bellow existing navigation menu node
+      tags:
+        - navigation
+      parameters:
+        - $ref: '#/components/parameters/select'
+        - $ref: '#/components/parameters/Content-Type'
+        - $ref: '#/components/parameters/nodeId'
       requestBody:
         description: Details for the menu item to add.
         required: true
