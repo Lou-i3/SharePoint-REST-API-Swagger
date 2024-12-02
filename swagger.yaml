@@ -682,6 +682,9 @@ tags:
   - name: pages
     description: |
       Working with pages
+  - name: files and folders
+    description: |
+      Working with files and folders
   - name: terms
     description: | 
       Working with terms of term store and managed metadata
@@ -915,6 +918,33 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+        '400': 
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/UnauthorizedOperation'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /_api/web/GetFolderByServerRelativeUrl('{fileServerRelativeUrl}')/files:
+   # fileServerRelativeUrl : site relative 
+    get: #TODO
+      summary: TODO
+      tags:
+        - files and folders
+      responses:
+        '400': 
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/UnauthorizedOperation'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /_api/web/folders:
+    get: #TODO
+      summary: TODO
+      tags:
+        - files and folders
+      responses:
         '400': 
           $ref: '#/components/responses/BadRequest'
         '403':
